@@ -101,6 +101,23 @@
     display: block;
     overflow: scroll;
 }
+.sc-table .sc-table-container .sc-table-table tbody .not-data:before,
+.sc-table .sc-table-container .sc-table-table tbody .not-data:after{
+    content: '';
+    flex: 1;
+}
+.sc-table .sc-table-container .sc-table-table tbody .not-data{
+    color: #CCCCCC;
+    font-size: 18px;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 .sc-table .sc-table-container .sc-table-table thead,
 .sc-table .sc-table-container .sc-table-table tbody tr{
     display: table;

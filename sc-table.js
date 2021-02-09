@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * @file sc-table.js
- * 
+ *
  */
 
 class ScTable {
@@ -95,19 +95,15 @@ class ScTable {
     _LoadingHtml = `<div class="sc-table-loading">正在加载数据...</div>`;
 
     /**
-     * 
-     * @param {*} selector 
-     * @param {*} apiUrl 
-     * @param {*} selected 
-     * @param {*} queryParams 
-     * @param {*} columns 
-     * @param {*} height 
-     * @param {*} scrollBottomHeight 
+     *
+     * @param {*} selector
+     * @param {*} apiUrl
+     * @param {*} selected
+     * @param {*} queryParams
+     * @param {*} columns
+     * @param {*} height
      */
-    constructor(selector, apiUrl, selected = [], queryParams = {}, columns = [
-        {field: 'id',title: 'Id', pk: true},
-        {field: 'name',title: 'name', title: true},
-    ], height = 400) {
+    constructor(selector, apiUrl, selected = [], queryParams = {}, columns = [], height = 400) {
         // 基本参数信息
         this.selector = selector;
         this.selected = new Set(selected);
@@ -125,7 +121,6 @@ class ScTable {
                 let item = apiUrl[key];
                 this.data[item[this._PkName]] = item;
             }
-            console.log(this.data)
         }
 
         // 初始化界面
@@ -144,7 +139,7 @@ class ScTable {
 
         this.columns.forEach((v, k) => {
             if(v.hasOwnProperty('pk') && v['pk']) {
-                oldThis._PkName = v['field']        
+                oldThis._PkName = v['field']
             } else if(v.hasOwnProperty('name') && v['name']) {
                 oldThis._TitleName = v['field'];
             }
@@ -170,7 +165,7 @@ class ScTable {
         </div>
         `;
 
-        $(this.selector).addClass(this._Class).append(html);
+        $(this.selector).addClass(this._Class).html(html);
 
         this.initTableHtml();
 
@@ -179,8 +174,8 @@ class ScTable {
 
     /**
      * 格式化请求参数
-     * 
-     * @param {Object} params 
+     *
+     * @param {Object} params
      */
     getFormatParams(params) {
         let _queryParams = this.queryParams;
@@ -201,7 +196,7 @@ class ScTable {
         // 分类请求
         tmpParams['page_size'] = this.pageSize;
         tmpParams['page'] = (params.offset / this.pageSize) + 1;
-        
+
         _queryParams.params = JSON.stringify(tmpParams);
         return _queryParams;
     }
@@ -210,7 +205,7 @@ class ScTable {
      * 初始化表格部分HTML
      */
     initTableHtml() {
-        
+
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
 
         // 初始化表头
@@ -221,7 +216,7 @@ class ScTable {
                 <input type="checkbox" name="all" class="${this._TableAllCheckboxClass}">
                 </td>
             </td>`;
-        
+
         if(this.columns instanceof Array && this.columns.length > 0) {
             this.columns.forEach((v) => {
                 let style = "";
@@ -238,7 +233,7 @@ class ScTable {
             this.syncGetApiData()
         } else {
             $(tableSelector + ' > tbody').append(this._LoadingHtml);
-            
+
             if(JSON.stringify(this.data) != "{}") {
                 this.renderTableData(this.data);
                 $(tableSelector + ' .sc-table-loading').remove();
@@ -260,15 +255,15 @@ class ScTable {
             });
             this.renderSelected();
         }catch(e) {
-            
+
         }
 
     }
 
     /**
      * 格式化接口响应回调方法
-     * 
-     * @param {*} response 
+     *
+     * @param {*} response
      */
     formatApiCallback(response) {
         // 这里进行页面数递增
@@ -276,14 +271,14 @@ class ScTable {
         if(response.code == 0) {
             // 获取响应数据
             let responseData = response.data.list || [];
-            
+
             // 渲染新获取到的数据
             this.renderTableData(responseData);
 
             // 必须有数据才允许递增
             responseData.length > 0 && this._Page ++;
 
-        } 
+        }
 
         // 加载失败
         return ;
@@ -291,8 +286,8 @@ class ScTable {
 
     /**
      * 接口获取数据出错
-     * 
-     * @param {*} errs 
+     *
+     * @param {*} errs
      */
     syncGetApiDataErrorCallback(errs) {
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
@@ -367,13 +362,13 @@ class ScTable {
 
     /**
      * 渲染表格数据
-     * 
-     * @param {*} data 
+     *
+     * @param {*} data
      */
     renderTableData(data, isSearch = false) {
         let oldThis = this;
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
-        
+``
         // 表格滚动到底部事件
         let row = '';
         for(let key in data){
@@ -407,14 +402,14 @@ class ScTable {
         // 保存缓存数据
         this.listenTrRowClickEvent();
         this.calcAllSelectStatus();
+        this.emptyTableHtml();
     }
 
     /**
      * 设置选择状态
-     * 
-     * @param {*} id 
-     * @param {*} rowObj 
-     * @param {*} status 
+     *
+     * @param {*} id
+     * @param {*} status
      */
     setSelectStatus(id, status = true) {
         $(this.selector + ' input[type="checkbox"][pk="'+id+'"]').prop('checked', status);
@@ -488,7 +483,7 @@ class ScTable {
         $(eventSelector).on('click', function (e) {
             let status = $(this).is(':checked');
             $(tableSelector + ' input[type="checkbox"]').prop('checked', status);
-        
+
             if (status) {
                 // oldThis.value = oldThis.data;
                 oldThis.selected = new Set([]);
@@ -536,7 +531,7 @@ class ScTable {
         const oldThis = this;
         // scrollBottomHeight
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
-        
+
         // 表格滚动到底部事件
         $(tableSelector + ' > tbody').on('scroll', function (e) {
             let clientHeight  = $(this)[0].clientHeight;  // 客户区大小
@@ -589,14 +584,14 @@ class ScTable {
                     }
 
                 }
-                
+
                 oldThis._Loading = true;
 
             } else {
                 tmpData = oldThis.data;
                 oldThis._Loading = false;
             }
-            
+
             oldThis.renderTableData(tmpData, true);
         });
     }
@@ -616,5 +611,17 @@ class ScTable {
 
     }
 
+    /**
+     * 空数据显示
+     */
+    emptyTableHtml() {
+        let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
+
+        let content = $(tableSelector + ' > table').text();
+        console.log(content);
+        if (!content || content.replace(' ', '') == '') {
+            $(tableSelector + ' > tbody').html('<div class="not-data">暂无数据</div>')
+        }
+    }
 }
 
