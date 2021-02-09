@@ -90,6 +90,11 @@ class ScTable {
     _Loading = false;
 
     /**
+     * 加载时提示
+     */
+    _LoadingHtml = `<div class="sc-table-loading">正在加载数据...</div>`;
+
+    /**
      * 
      * @param {*} selector 
      * @param {*} apiUrl 
@@ -110,17 +115,24 @@ class ScTable {
         this.columns = columns;
         this.height = height;
 
-        if (typeof(apiUrl) == 'string') {
-            this.apiUrl = apiUrl;
-        } else {
-            this.data = new Set(apiUrl);
-        }
-
         // 初始化标题栏信息
         this.initColumn();
 
+        if (typeof(apiUrl) == 'string') {
+            this.apiUrl = apiUrl;
+        } else {
+            for(let key in apiUrl){
+                let item = apiUrl[key];
+                this.data[item[this._PkName]] = item;
+            }
+            console.log(this.data)
+        }
+
         // 初始化界面
         this.initHtml();
+
+        // 渲染默认组件
+        this.initDefaultSelected();
 
     }
 
@@ -202,7 +214,13 @@ class ScTable {
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
 
         // 初始化表头
-        let theadHtml = `<tr><td class="td-checkbox"><div><input type="checkbox" name="all" class="${this._TableAllCheckboxClass}"></td></td>`;
+        let theadHtml = `
+        <tr>
+            <td class="td-checkbox">
+                <div>
+                <input type="checkbox" name="all" class="${this._TableAllCheckboxClass}">
+                </td>
+            </td>`;
         
         if(this.columns instanceof Array && this.columns.length > 0) {
             this.columns.forEach((v) => {
@@ -216,7 +234,34 @@ class ScTable {
         theadHtml += '</tr>';
         $(tableSelector + ' > thead').html(theadHtml);
 
-        this.syncGetApiData();
+        if(this.apiUrl) {
+            this.syncGetApiData()
+        } else {
+            $(tableSelector + ' > tbody').append(this._LoadingHtml);
+            
+            if(JSON.stringify(this.data) != "{}") {
+                this.renderTableData(this.data);
+                $(tableSelector + ' .sc-table-loading').remove();
+            } else {
+                $(tableSelector + ' > tbody .sc-table-loading').html('暂无数据');
+            }
+        }
+    }
+
+    /**
+     * 默认选中项
+     */
+    initDefaultSelected() {
+        const oldThis = this;
+
+        try{
+            Array.from(this.selected).forEach((pk) => {
+                oldThis.setSelectStatus(pk, true);
+            });
+            this.renderSelected();
+        }catch(e) {
+            
+        }
 
     }
 
@@ -235,9 +280,6 @@ class ScTable {
             // 渲染新获取到的数据
             this.renderTableData(responseData);
 
-            // 合并数据
-            // this.data = this.data.concat(responseData);
-
             // 必须有数据才允许递增
             responseData.length > 0 && this._Page ++;
 
@@ -253,7 +295,9 @@ class ScTable {
      * @param {*} errs 
      */
     syncGetApiDataErrorCallback(errs) {
-        alert('获取数据出错啦，请稍后再尝试吧！');
+        let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
+        let html = '<div class="sc-table-loading">无法载入数据...</div>';
+        $(tableSelector + ' > tbody').append(html)
     }
 
     /**
@@ -300,6 +344,9 @@ class ScTable {
 
         const oldThis = this;
 
+        let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
+        $(tableSelector + ' > tbody').append('<div class="append-data">' + this._LoadingHtml + '</div>');
+
         $.ajax({
             type: 'GET',
             url: this.getApiQueryParams(),
@@ -307,6 +354,8 @@ class ScTable {
             success: function (res) {
                 oldThis.formatApiCallback(res);
                 oldThis._Loading = false;
+                $(tableSelector+' .sc-table-loading').remove();
+                $(tableSelector+' .append-data').remove();
             },
             error: function (errs) {
                 oldThis.syncGetApiDataErrorCallback(errs);
@@ -325,7 +374,7 @@ class ScTable {
         let oldThis = this;
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
         
-        // 表格滚动到底部事件 todo ...
+        // 表格滚动到底部事件
         let row = '';
         for(let key in data){
             let item = data[key];
@@ -368,7 +417,7 @@ class ScTable {
      * @param {*} status 
      */
     setSelectStatus(id, status = true) {
-        $('input[type="checkbox"][pk="'+id+'"]').prop('checked', status);
+        $(this.selector + ' input[type="checkbox"][pk="'+id+'"]').prop('checked', status);
 
         if (status) {
             this.selected.add(id);
@@ -465,19 +514,17 @@ class ScTable {
 
         $(tableBodySelector + ' tr').on('click', function (e) {
             let rowCheckbox = $(this).find('input[type="checkbox"]');
-            rowCheckbox.prop('checked', !rowCheckbox.is(':checked'));
-            oldThis.setSelectStatus(rowCheckbox.attr('pk'), rowCheckbox.is(':checked'));
+            let status = rowCheckbox.is(':checkbox');
+            oldThis.setSelectStatus(rowCheckbox.attr('pk'), status);
             oldThis.renderSelected();
-            // 计算是否全选
             oldThis.calcAllSelectStatus();
         });
 
         $(tableBodySelector + ' tr input[type="checkbox"]').on('click', function (e) {
+            e.stopPropagation();
             oldThis.setSelectStatus($(this).attr('pk'), $(this).is(':checked'));
             oldThis.renderSelected();
-            // 计算是否全选
             oldThis.calcAllSelectStatus();
-            e.stopPropagation();
         });
 
     }
@@ -524,7 +571,6 @@ class ScTable {
 
     /**
      * 查询事件监听
-     *     todo 未完成，查询后数据加载问题待解决
      */
     listenSearchInputEvent() {
         const oldThis = this;
@@ -552,7 +598,6 @@ class ScTable {
             }
             
             oldThis.renderTableData(tmpData, true);
-            
         });
     }
 

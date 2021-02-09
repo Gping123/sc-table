@@ -113,6 +113,18 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 }
+.sc-table .sc-table-container .sc-table-table tbody .sc-table-loading:not(.append-data)::before,
+.sc-table .sc-table-container .sc-table-table tbody .sc-table-loading:not(.append-data)::after{
+    content: '';
+    flex: 1;
+}
+.sc-table .sc-table-container .sc-table-table tbody .sc-table-loading:not(.append-data){
+    text-align: center;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+
 /* 表格主体部分 结束 */
 
 
