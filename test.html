@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test ScTable</title>
+    <link rel="stylesheet" href="./sc-table.css">
+    <style>
+        *{margin:0px;padding:0px;}
+        body,html{height:100%;}
+        #app{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 40px;
+        }
+        #sc-table{
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="sc-table" class="table-sm" style="width: 800px;"></div>
+    </div>
+
+    <script src='https://libs.baidu.com/jquery/1.10.2/jquery.min.js'></script>
+    <script src="./sc-table.js"></script>
+
+    <script>
+        let stt = new ScTable('#sc-table', 'http://localhost/index.php', [], {
+            account_id: 18005302,
+            act: 'get',
+            ctr: 'customAudiences',
+            params: {
+                account_id: 18005302
+            }
+        }, [
+            {'field':'audience_id', title: 'audience_id', pk:true},
+            {'field':'name', title: 'name', name:true, width: 250},
+            {'field':'status', title: 'status'},
+            {'field':'user_count', title: 'user_count'},
+        ], 200);
+    </script>
+</body>
+</html>

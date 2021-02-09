@@ -1,0 +1,165 @@
+
+.sc-table * {
+    --theme-color: rgb(60, 140, 188);
+    --label-height: 16px;
+}
+.sc-table {
+    border: 1px solid #ccc;
+}
+
+/* 头部 */
+.sc-table .sc-table-header{
+    width: 100%;
+}
+/* 标签栏 */
+.sc-table .sc-table-header .sc-table-labels{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px 0px;
+}
+.sc-table .sc-table-header .sc-table-labels > label {
+    font-size: 14px;
+    height: 28px;
+    line-height: 28px;
+    padding: 0px 10px;
+    border: 1px solid var(--theme-color);
+    display: block;
+    margin: 3px;
+    background-color: var(--theme-color);
+    border-radius: calc(28px / 2);
+    display: flex;
+    align-items: center;
+}
+/* 标签关闭按钮 */
+.sc-table .sc-table-header .sc-table-labels .sc-table-label-close{
+    margin-left: 10px;
+    cursor: pointer;
+    transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+}
+
+/* 容器部分 */
+.sc-table .sc-table-container {
+    position: relative;
+    overflow-y: auto;
+}
+
+/* 表头搜索工具栏 开始 */
+.sc-table .sc-table-container .sc-table-tool-panel{
+    background-color: #f3f3f3;
+    padding: 0px;
+    padding: 10px;
+}
+.sc-table .sc-table-container .sc-table-tool-panel .sc-table-search-input{
+    display: flex;
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    text-indent: 10px;
+    font-size: 15px;
+    outline: none;
+}
+/* 表头搜索工具栏 结束 */
+
+/* 表格部分 */
+.sc-table .sc-table-container .sc-table-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0px;
+}
+
+/* 表格单元格公共样式 */
+.sc-table .sc-table-container .sc-table-table td,
+.sc-table .sc-table-container .sc-table-table th:not(:first-child){
+    border-top: 1px solid #cccccc;
+    padding: 3px 5px;
+}
+
+/* 复选框列表默认固定宽度 */
+.sc-table .sc-table-container .sc-table-table td:first-child{
+    width: 50px;
+}
+
+/* 表头样式 开始 */
+.sc-table .sc-table-container .sc-table-table thead{
+    width: calc( 100% - 4px);
+    background: #f3f3f3;
+}
+.sc-table .sc-table-container .sc-table-table thead tr{
+    height: 35px;
+    line-height: 35px;
+    border-bottom: 1px solid #aaaaaa;
+}
+/* 表头样式 结束 */
+/* 表格主体部分 开始 */
+.sc-table .sc-table-container .sc-table-table tbody tr:hover{
+    background-color: #f3f3f3;
+}
+.sc-table .sc-table-container .sc-table-table tbody {
+    display: block;
+    overflow: scroll;
+}
+.sc-table .sc-table-container .sc-table-table thead,
+.sc-table .sc-table-container .sc-table-table tbody tr{
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+.sc-table .sc-table-container .sc-table-table tbody tr{
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+/* 表格主体部分 结束 */
+
+
+/* 单元格样式 */
+
+/* 复选框样式 开始 */
+.sc-table .sc-table-container .sc-table-table .td-checkbox{
+    text-align: center;
+}
+.sc-table .sc-table-container .sc-table-table .td-checkbox > input {
+    display: block;
+}
+/* 复选框样式 结束 */
+
+
+
+/* 通用样式 */
+
+/* 滚动条样式修改 */
+.sc-table *::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width : 3px;
+    height: 5px;
+}
+.sc-table *::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+	background   : #888888;
+	border-radius: 2px;
+}
+.sc-table *::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    background   : #cccccc;
+}
+
+.sc-table-label-close {
+    display: inline-block;
+    width: 1em;
+    height: 2px;
+    background: #333;
+    transform: rotate(45deg);
+}
+
+.sc-table-label-close::after {
+    content: '';
+    display: block;
+    width: 1em;
+    height: 2px;
+    background: #333;
+    transform: rotate(-90deg);
+}
