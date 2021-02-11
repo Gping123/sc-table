@@ -126,9 +126,6 @@ class ScTable {
         // 初始化界面
         this.initHtml();
 
-        // 渲染默认组件
-        this.initDefaultSelected();
-
     }
 
     /**
@@ -368,7 +365,7 @@ class ScTable {
     renderTableData(data, isSearch = false) {
         let oldThis = this;
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
-``
+        ``
         // 表格滚动到底部事件
         let row = '';
         for(let key in data){
@@ -403,6 +400,8 @@ class ScTable {
         this.listenTrRowClickEvent();
         this.calcAllSelectStatus();
         this.emptyTableHtml();
+        // 渲染默认组件
+        this.initDefaultSelected();
     }
 
     /**
@@ -413,6 +412,10 @@ class ScTable {
      */
     setSelectStatus(id, status = true) {
         $(this.selector + ' input[type="checkbox"][pk="'+id+'"]').prop('checked', status);
+
+        if ($.isNumeric(id)) {
+            id = parseInt(id);
+        }
 
         if (status) {
             this.selected.add(id);
@@ -452,6 +455,9 @@ class ScTable {
         let labelHtml = '';
         for(let k in this.value) {
             let v = this.value[k];
+            if(!v) {
+                continue;
+            }
             labelHtml += `<label value="${v[oldThis._PkName]}">
                     ${v[oldThis._TitleName]} 
                     <div class="${oldThis._LabelCloseClass}" title="关闭" value="${v[oldThis._PkName]}"></div>
@@ -509,8 +515,8 @@ class ScTable {
 
         $(tableBodySelector + ' tr').on('click', function (e) {
             let rowCheckbox = $(this).find('input[type="checkbox"]');
-            let status = rowCheckbox.is(':checkbox');
-            oldThis.setSelectStatus(rowCheckbox.attr('pk'), status);
+            let status = rowCheckbox.is(':checked');
+            oldThis.setSelectStatus(rowCheckbox.attr('pk'), !status);
             oldThis.renderSelected();
             oldThis.calcAllSelectStatus();
         });
@@ -617,11 +623,9 @@ class ScTable {
     emptyTableHtml() {
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
 
-        let content = $(tableSelector + ' > table').text();
-        console.log(content);
+        let content = $(tableSelector + ' > tbody').text();
         if (!content || content.replace(' ', '') == '') {
             $(tableSelector + ' > tbody').html('<div class="not-data">暂无数据</div>')
         }
     }
 }
-

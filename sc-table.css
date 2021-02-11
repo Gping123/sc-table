@@ -25,7 +25,7 @@
     border: 1px solid var(--theme-color);
     display: block;
     margin: 3px;
-    background-color: var(--theme-color);
+    /* background-color: var(--theme-color); */
     border-radius: calc(28px / 2);
     display: flex;
     align-items: center;
