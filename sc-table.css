@@ -15,7 +15,7 @@
 .sc-table .sc-table-header .sc-table-labels{
     display: flex;
     flex-wrap: wrap;
-    padding: 5px 0px;
+    padding: 5px 10px;
 }
 .sc-table .sc-table-header .sc-table-labels > label {
     font-size: 14px;
@@ -25,7 +25,7 @@
     border: 1px solid var(--theme-color);
     display: block;
     margin: 3px;
-    /* background-color: var(--theme-color); */
+    /*background-color: var(--theme-color);*/
     border-radius: calc(28px / 2);
     display: flex;
     align-items: center;
@@ -38,6 +38,17 @@
     -o-transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
+}
+.sc-table .sc-table-header .sc-table-header-tools{
+    padding: 10px ;
+    padding-bottom: 0px;
+}
+.sc-table .sc-table-header .sc-table-header-tools .clear-all{
+    margin-left: 10px;
+    color: var(--theme-color);
+    border-color: transparent;
+    background-color: transparent;
+    outline: none;
 }
 
 /* 容器部分 */

@@ -67,7 +67,7 @@ class ScTable {
     /**
      * 每页记录数
      */
-    _PageSize = 10;
+    _PageSize = 999999;
 
     /**
      * 数据主键
@@ -149,6 +149,7 @@ class ScTable {
     initHtml() {
         let html = `
         <div class="${this._HeaderClass}">
+            <div class="sc-table-header-tools">已选择(<span class="selected-number">0</span>) <button type="button" class="clear-all">清空</button></div>
             <div class="${this._HeaderLablesClass}"></div>
         </div>
         <div class="${this._ContainerClass}">
@@ -344,10 +345,10 @@ class ScTable {
             url: this.getApiQueryParams(),
             dataType: 'json',
             success: function (res) {
-                oldThis.formatApiCallback(res);
-                oldThis._Loading = false;
                 $(tableSelector+' .sc-table-loading').remove();
                 $(tableSelector+' .append-data').remove();
+                oldThis.formatApiCallback(res);
+                oldThis._Loading = false;
             },
             error: function (errs) {
                 oldThis.syncGetApiDataErrorCallback(errs);
@@ -361,11 +362,11 @@ class ScTable {
      * 渲染表格数据
      *
      * @param {*} data
+     * @param {*} isSearch
      */
     renderTableData(data, isSearch = false) {
         let oldThis = this;
         let tableSelector = this.selector + ' .' + this._ContainerClass + ' .' + this._TableClass;
-        ``
         // 表格滚动到底部事件
         let row = '';
         for(let key in data){
@@ -413,10 +414,6 @@ class ScTable {
     setSelectStatus(id, status = true) {
         $(this.selector + ' input[type="checkbox"][pk="'+id+'"]').prop('checked', status);
 
-        if ($.isNumeric(id)) {
-            id = parseInt(id);
-        }
-
         if (status) {
             this.selected.add(id);
             this.value[id] = this.data[id];
@@ -440,33 +437,36 @@ class ScTable {
         // 设置节点值
         this.setValueAttribute();
         // 每次操作均会重新渲染一遍label面板
-        this.renderSelectedLable();
+        this.renderSelectedLabel();
     }
 
     /**
      * 渲染已选标签列表
      */
-    renderSelectedLable() {
+    renderSelectedLabel() {
         let oldThis = this;
         let labelsDom = $(this.selector + ' .' + this._HeaderClass + ' .'+this._HeaderLablesClass);
 
         labelsDom.html('');
 
-        let labelHtml = '';
+        let labelHtml = ``;
+        let len = 0;
         for(let k in this.value) {
             let v = this.value[k];
             if(!v) {
                 continue;
             }
+            ++len;
             labelHtml += `<label value="${v[oldThis._PkName]}">
                     ${v[oldThis._TitleName]} 
                     <div class="${oldThis._LabelCloseClass}" title="关闭" value="${v[oldThis._PkName]}"></div>
                 </label>`;
         };
         labelsDom.html(labelHtml);
+        $(this.selector + ' .'+this._HeaderClass + ' .sc-table-header-tools .selected-number').text(len);
 
         this.listenLabelCloseEvent();
-
+        this.listenClearSelectedEvent();
     }
 
     /**
@@ -498,11 +498,26 @@ class ScTable {
                     oldThis.selected.add(k);
                     oldThis.value[k] = oldThis.data[k];
                 }
-
-                oldThis.renderSelected();
+            } else {
+                oldThis.selected = new Set([]);
+                oldThis.value = {};
             }
 
+            oldThis.renderSelected();
 
+        });
+    }
+
+    /**
+     * 清空事件
+     */
+    listenClearSelectedEvent() {
+        const oldThis = this;
+        $(this.selector + ' .' + this._HeaderClass + ' .clear-all').on('click', function () {
+            oldThis.selected = new Set([]);
+            oldThis.value = {};
+            oldThis.renderSelected();
+            $(oldThis.selector + ' .' + oldThis._ContainerClass + ' input[type="checkbox"]').prop('checked', false);
         });
     }
 
@@ -609,7 +624,8 @@ class ScTable {
         // 获取全选复选框状态
         let allCheckbox = $(this.selector + ' .'+this._TableAllCheckboxClass);
 
-        if ($(this.selector + ' input[type="checkbox"]:not([name="all"])').length == Array.from(this.selected).length) {
+        let selectedLen = Array.from(this.selected).length;
+        if (selectedLen && $(this.selector + ' input[type="checkbox"]:not([name="all"])').length === selectedLen) {
             allCheckbox.prop('checked', true);
         } else {
             allCheckbox.prop('checked', false);
